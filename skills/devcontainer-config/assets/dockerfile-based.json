@@ -1,0 +1,22 @@
+{
+  "name": "Dev Container",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "..",
+    "args": {}
+  },
+  
+  "features": {},
+  
+  "customizations": {
+    "vscode": {
+      "extensions": []
+    }
+  },
+  
+  "forwardPorts": [],
+  
+  "postCreateCommand": "",
+  
+  "remoteUser": "vscode"
+}
