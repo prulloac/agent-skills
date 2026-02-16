@@ -267,7 +267,7 @@ Use the `model` config to override the model for this agent. Useful for using di
 
 Tip
 
-If you don't specify a model, primary agents use the [model globally configured](/docs/config#models) while subagents will use the model of the primary agent that invoked the subagent.
+If you don't specify a model, primary agents use the [model globally configured](https://opencode.ai/docs/config#models) while subagents will use the model of the primary agent that invoked the subagent.
 
 opencode.json
 
@@ -275,7 +275,7 @@ opencode.json
 {  "agent": {    "plan": {      "model": "anthropic/claude-haiku-4-20250514"    }  }}
 ```
 
-The model ID in your OpenCode config uses the format `provider/model-id`. For example, if you're using [OpenCode Zen](/docs/zen), you would use `opencode/gpt-5.1-codex` for GPT 5.1 Codex.
+The model ID in your OpenCode config uses the format `provider/model-id`. For example, if you're using [OpenCode Zen](https://opencode.ai/docs/zen), you would use `opencode/gpt-5.1-codex` for GPT 5.1 Codex.
 
 ---
 
@@ -301,7 +301,7 @@ opencode.json
 {  "$schema": "https://opencode.ai/config.json",  "agent": {    "readonly": {      "tools": {        "mymcp_*": false,        "write": false,        "edit": false      }    }  }}
 ```
 
-[Learn more about tools](/docs/tools).
+[Learn more about tools](https://opencode.ai/docs/tools).
 
 ---
 
@@ -360,7 +360,7 @@ opencode.json
 {  "$schema": "https://opencode.ai/config.json",  "agent": {    "build": {      "permission": {        "bash": {          "*": "ask",          "git status *": "allow"        }      }    }  }}
 ```
 
-[Learn more about permissions](/docs/permissions).
+[Learn more about permissions](https://opencode.ai/docs/permissions).
 
 ---
 

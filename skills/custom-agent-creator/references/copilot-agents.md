@@ -12,13 +12,13 @@ Custom agents are available as of VS Code release 1.106. Custom agents were prev
 
 ## What are custom agents?
 
-The [built-in agents](/docs/copilot/agents/local-agents) provide general-purpose configurations for chat in VS Code. For a more tailored chat experience, you can create your own custom agents.
+The [built-in agents](https://code.visualstudio.com/docs/copilot/agents/local-agents) provide general-purpose configurations for chat in VS Code. For a more tailored chat experience, you can create your own custom agents.
 
 Custom agents consist of a set of instructions and tools that are applied when you switch to that agent. For example, a "Plan" agent could include instructions for generating an implementation plan and only use read-only tools. By creating a custom agent, you can quickly switch to that specific configuration without having to manually select relevant tools and instructions each time.
 
 Custom agents are defined in a `.agent.md` Markdown file, and can be stored in your workspace for others to use, or in your user profile, where you can reuse them across different workspaces.
 
-You can reuse your custom agents in [background agents](/docs/copilot/agents/background-agents) and [cloud agents](/docs/copilot/agents/cloud-agents), enabling you to run autonomous tasks with the same specialized configurations.
+You can reuse your custom agents in [background agents](https://code.visualstudio.com/docs/copilot/agents/background-agents) and [cloud agents](https://code.visualstudio.com/docs/copilot/agents/cloud-agents), enabling you to run autonomous tasks with the same specialized configurations.
 
 ## Why use custom agents?
 
@@ -28,7 +28,7 @@ Custom agents also let you provide specialized instructions that define how the 
 
 Note
 
-Subagents can run with a custom agent. Learn more about running [subagents with custom agents](/docs/copilot/agents/subagents#_run-a-custom-agent-as-a-subagent-experimental) (experimental).
+Subagents can run with a custom agent. Learn more about running [subagents with custom agents](https://code.visualstudio.com/docs/copilot/agents/subagents#_run-a-custom-agent-as-a-subagent-experimental) (experimental).
 
 ## Handoffs
 
@@ -74,10 +74,10 @@ The header is formatted as YAML frontmatter with the following fields:
 | `description` | A brief description of the custom agent, shown as placeholder text in the chat input field. |
 | `name` | The name of the custom agent. If not specified, the file name is used. |
 | `argument-hint` | Optional hint text shown in the chat input field to guide users on how to interact with the custom agent. |
-| `tools` | A list of tool or tool set names that are available for this custom agent. Can include built-in tools, tool sets, MCP tools, or tools contributed by extensions. To include all tools of an MCP server, use the `<server name>/*` format. Learn more about [tools in chat](/docs/copilot/agents/agent-tools). |
-| `agents` | A list of agent names that are available as [subagents](/docs/copilot/agents/subagents) in this agent. Use `*` to allow all agents, or an empty array `[]` to prevent any subagent use. If you specify `agents`, ensure the `agent` tool is included in the `tools` property. |
+| `tools` | A list of tool or tool set names that are available for this custom agent. Can include built-in tools, tool sets, MCP tools, or tools contributed by extensions. To include all tools of an MCP server, use the `<server name>/*` format. Learn more about [tools in chat](https://code.visualstudio.com/docs/copilot/agents/agent-tools). |
+| `agents` | A list of agent names that are available as [subagents](https://code.visualstudio.com/docs/copilot/agents/subagents) in this agent. Use `*` to allow all agents, or an empty array `[]` to prevent any subagent use. If you specify `agents`, ensure the `agent` tool is included in the `tools` property. |
 | `model` | The AI model to use when running the prompt. Specify a single model name (string) or a prioritized list of models (array). When you specify an array, the system tries each model in order until an available one is found. If not specified, the currently selected model in model picker is used. |
-| `user-invokable` | Optional boolean flag to control whether the agent appears in the agents dropdown in chat (default is `true`). Set to `false` to create agents that are only accessible as [subagents](/docs/copilot/agents/subagents) or programmatically. |
+| `user-invokable` | Optional boolean flag to control whether the agent appears in the agents dropdown in chat (default is `true`). Set to `false` to create agents that are only accessible as [subagents](https://code.visualstudio.com/docs/copilot/agents/subagents) or programmatically. |
 | `disable-model-invocation` | Optional boolean flag to prevent the agent from being invoked as a subagent by other agents (default is `false`). |
 | `infer` | **Deprecated.** Use `user-invokable` and `disable-model-invocation` instead. Previously, `infer: true` (the default) made the agent both visible in the picker and available as a subagent. `infer: false` hid it from both. The new fields give you independent control: use `user-invokable: false` to hide from the picker while still allowing subagent invocation, or `disable-model-invocation: true` to prevent subagent invocation while keeping it in the picker. |
 | `target` | The target environment or context for the custom agent (`vscode` or `github-copilot`). |
@@ -203,7 +203,7 @@ Type `/agents` in the chat input to quickly open the **Configure Custom Agents**
 2. Choose the location where the custom agent file should be created.
 
    - **Workspace**: Create the custom agent definition file in the `.github/agents` folder of your workspace to only use it within that workspace.
-   - **User profile**: Create the custom agent definition file in the [current profile folder](/docs/configure/profiles) to use it across all your workspaces.
+   - **User profile**: Create the custom agent definition file in the [current profile folder](https://code.visualstudio.com/docs/configure/profiles) to use it across all your workspaces.
    - **Workspace (Claude format)**: Create agent files in the `.claude/agents` folder for compatibility with Claude Code and other Claude-based tools.
 
    Tip
@@ -275,10 +275,10 @@ To identify the source of a custom agent:
 
 Tip
 
-Use the chat customization diagnostics view to see all loaded custom agents, prompt files, instruction files, and skills along with any errors. Right-click in the Chat view and select **Diagnostics**. Learn more about [troubleshooting AI in VS Code](/docs/copilot/troubleshooting).
+Use the chat customization diagnostics view to see all loaded custom agents, prompt files, instruction files, and skills along with any errors. Right-click in the Chat view and select **Diagnostics**. Learn more about [troubleshooting AI in VS Code](https://code.visualstudio.com/docs/copilot/troubleshooting).
 
 ## Related resources
 
-- [Customize AI with custom instructions](/docs/copilot/customization/custom-instructions)
-- [Create reusable prompt files](/docs/copilot/customization/prompt-files)
-- [Use tools in chat](/docs/copilot/agents/agent-tools)
+- [Customize AI with custom instructions](https://code.visualstudio.com/docs/copilot/customization/custom-instructions)
+- [Create reusable prompt files](https://code.visualstudio.com/docs/copilot/customization/prompt-files)
+- [Use tools in chat](https://code.visualstudio.com/docs/copilot/agents/agent-tools)
