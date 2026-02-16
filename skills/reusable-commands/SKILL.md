@@ -7,6 +7,12 @@ description: Create reusable commands for OpenCode or GitHub Copilot. Use this s
 
 This skill helps you create custom, reusable commands and prompts for either OpenCode or GitHub Copilot.
 
+## References
+
+- [OpenCode Commands Documentation](references/opencode-commands.md)
+- [GitHub Copilot Prompt Files Documentation](references/copilot-prompt-files.md)
+- [Templates](assets/) - Example templates for creating commands
+
 ## Workflow
 
 1.  **Identify Target Agent:** Determine if the command is intended for OpenCode or GitHub Copilot.
@@ -37,11 +43,15 @@ Syntax:
 - `!command`: Shell command output.
 - `@filename`: File content.
 
+See [references/opencode-commands.md](references/opencode-commands.md) for detailed documentation.
+
 ### Copilot Prompt Files (`.prompt.md`)
 Frontmatter: `description` (required), `argument-hint`, `agent`, `model`, `tools`.
 Syntax:
 - `${selection}`: Editor selection.
 - `[label](path)`: Specific file content.
+
+See [references/copilot-prompt-files.md](references/copilot-prompt-files.md) for detailed documentation.
 
 ## Examples
 
