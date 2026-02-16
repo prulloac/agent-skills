@@ -1,0 +1,22 @@
+{
+    "name": "Agent Skills Dev Container",
+    "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+    "features": {
+        "ghcr.io/devcontainers/features/github-cli:1": {},
+        "ghcr.io/stu-bell/devcontainer-features/open-code:0": {},
+        "ghcr.io/devcontainers-extra/features/npm-package:1": {
+            "package": "skills"
+        }
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-vscode.vscode-json",
+                "sst-dev.opencode",
+                "GitHub.copilot-chat",
+                "GitHub.vscode-pull-request-github"
+            ]
+        }
+    }
+}
