@@ -6,6 +6,9 @@
         "ghcr.io/stu-bell/devcontainer-features/open-code:0": {},
         "ghcr.io/devcontainers-extra/features/npm-package:1": {
             "package": "skills"
+        },
+        "ghcr.io/devcontainers/features/node:1": {
+            "version": "latest"
         }
     },
     "customizations": {
