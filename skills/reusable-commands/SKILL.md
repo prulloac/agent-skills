@@ -23,7 +23,7 @@ This skill helps you create custom, reusable commands and prompts for either Ope
 2.  **Gather Command Details:**
     -   **Command Name:** What will the user type to trigger it (e.g., `review`, `test`)?
     -   **Description:** A short summary of what it does.
-    -   **Prompt Body:** The actual instructions for the AI.
+    -   **Prompt Body:** The actual instructions for the AI. This can and should be an improved version of the user's original prompt, optimized for reuse.
     -   **Optional Parameters:** Specific agent, model, or tools.
 
 3.  **Apply Correct Format:**
@@ -85,4 +85,3 @@ After creating the command file:
 1.  **Check File Path:** Verify the file exists at the correct location (`.opencode/commands/` or `.github/prompts/`).
 2.  **Verify Content:** Ensure the YAML frontmatter is properly formatted and the prompt body is present.
 3.  **Test Command (Optional):** If possible, run the command (e.g., `/name` in TUI) to ensure it triggers correctly.
-
