@@ -7,6 +7,9 @@
         "ghcr.io/devcontainers-extra/features/npm-package:1": {
             "package": "skills"
         },
+        "ghcr.io/devcontainers-extra/features/npm-package:1": {
+            "package": "@google/gemini-cli"
+        },
         "ghcr.io/devcontainers/features/node:1": {
             "version": "latest"
         }
@@ -18,7 +21,8 @@
                 "ms-vscode.vscode-json",
                 "sst-dev.opencode",
                 "GitHub.copilot-chat",
-                "GitHub.vscode-pull-request-github"
+                "GitHub.vscode-pull-request-github",
+                "google.geminicodeassist"
             ]
         }
     }
