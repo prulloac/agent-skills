@@ -40,13 +40,33 @@ Use this skill when you need to validate an agent skill folder, checking its str
    - The skill should not reference or depend on other skills.
    - All necessary assets, scripts, and references must be bundled within the skill's directory.
 
-9. **Summarize and validate execution**:
-   - After completing all checks, provide a concise summary of the validation results, confirming the skill's status (valid or invalid), listing any issues, and suggesting fixes.
-   - Categorize issues by severity (Critical 🚨, Warning ⚠️, Info ℹ️) and group them accordingly.
-   - If issues are found, include examples and suggestions for fixes. If no issues, confirm validity with a positive note.
-   - This step ensures the validation process itself was correctly executed and provides closure.
+9. **Detect duplicate content**:
+   - Scan all files (SKILL.md and supporting files) for overlapping or duplicate sections/instructions.
+   - Check for repeated explanations, examples, or workflows across multiple files.
+   - Identify content that could be consolidated or cross-referenced more efficiently.
+   - Flag redundant subsections within the same file (e.g., repeated step descriptions).
+   - Duplicates waste token budget and confuse users; consolidate where possible.
 
-10. **Check for user information presentation examples**:
+10. **Estimate token cost (skill weight)**:
+    - Calculate approximate token count for the entire skill (SKILL.md + references + assets)
+    - Consider all text content, code examples, and documentation
+    - Categorize the skill's "weight" based on token consumption:
+      - **Lightweight** (< 2,000 tokens): Simple, focused skills
+      - **Small** (2,000-4,000 tokens): Moderate skills with examples
+      - **Medium** (4,000-8,000 tokens): Comprehensive skills with multiple sections
+      - **Large** (8,000-15,000 tokens): Extensive skills with many examples
+      - **Heavy** (15,000-25,000 tokens): Very comprehensive skills
+      - **Overweight** (> 25,000 tokens): Potentially too large; consider splitting
+    - Include weight in validation report for context awareness
+
+11. **Summarize and validate execution**:
+    - After completing all checks, provide a concise summary of the validation results, confirming the skill's status (valid or invalid), listing any issues, and suggesting fixes.
+    - Categorize issues by severity (Critical 🚨, Warning ⚠️, Info ℹ️) and group them accordingly.
+    - Include the skill's weight classification and token estimate.
+    - If issues are found, include examples and suggestions for fixes. If no issues, confirm validity with a positive note.
+    - This step ensures the validation process itself was correctly executed and provides closure.
+
+12. **Check for user information presentation examples**:
     - If the skill involves displaying or outputting information to the user (e.g., validation results, reports, or checklists), IT IS MANDATORY for it to include concrete examples of output formats.
     - Specify sample outputs, such as validation summaries with categorized issues (Critical 🚨, Warning ⚠️, Info ℹ️), checklists, or formatted messages.
     - This sets clear expectations and improves user experience by demonstrating the exact presentation style.
@@ -59,14 +79,186 @@ Use this skill when you need to validate an agent skill folder, checking its str
 
 ⚠️ **Warnings:**
 - Unclear description: Improve by making it more specific about when to use the skill.
+- Duplicate instructions detected in SKILL.md and references/workflow.md: Consolidate by moving to one location and cross-referencing.
 
 ℹ️ **Info:**
 - Minor readability suggestions: Consider shortening verbose sections for conciseness.
+- Skill weight: Medium (6,500 tokens) - Consider breaking into smaller, focused skills if it grows beyond 8,000 tokens.
 
 ### When no issues are found:
 ✅ **No issues found.** The skill is valid and ready for use.
+- Skill weight: Lightweight (1,200 tokens) - Efficient for loading and execution.
+
+## Duplicate Content Detection
+
+### Detection Strategy
+
+1. **Identify sections**: Extract all major sections (headers) from SKILL.md and all supporting files
+2. **Extract content blocks**: For each section, identify paragraphs, lists, code blocks, and examples
+3. **Semantic comparison**: Compare content blocks across files for:
+   - Exact duplicates (word-for-word matches)
+   - Near-duplicates (same concept, slightly different wording, > 80% similarity)
+   - Partial duplicates (repeated phrases or examples within a file)
+4. **Context analysis**: Determine if duplication serves a purpose or is redundant
+5. **Report findings**: List all duplicates with file locations and consolidation suggestions
+
+### Common Duplication Patterns to Flag
+
+| Pattern | Example | Action |
+|---------|---------|--------|
+| Repeated workflow steps | Step description appears in both SKILL.md and references/workflow.md | Consolidate; cross-reference |
+| Duplicate examples | Same code example shown in multiple sections | Keep in one place; reference from others |
+| Overlapping explanations | Same concept explained twice with different wording | Merge explanations; remove redundancy |
+| Repeated guidelines | Same best practices listed in two sections | Single source of truth; reference |
+| Tool descriptions | Same tool explained in multiple files | Define once; reference elsewhere |
+
+## Token Cost Estimation
+
+### Token Calculation Method
+
+1. **Estimate word count**: Count all words across all skill files
+2. **Apply conversion ratio**: Use ~1.3 tokens per word for English text (average for LLM tokenization)
+3. **Add overhead**: Account for:
+   - YAML frontmatter (50 tokens base)
+   - Markdown formatting overhead (+10% of content tokens)
+   - Code blocks (count as 1.0 tokens per word due to tokenization patterns)
+4. **Total calculation**: 
+   ```
+   Total Tokens = (SKILL.md words × 1.3) + (Reference files words × 1.3) + 
+                  (Code blocks words × 1.0) + (Formatting overhead 10%) + 50
+   ```
+
+### Weight Classification
+
+| Weight | Token Range | Description | Agent Impact |
+|--------|-------------|-------------|--------------|
+| 🟢 Lightweight | < 2,000 | Simple, focused skill | Minimal context usage; fast loading |
+| 🟢 Small | 2,000-4,000 | Moderate skill with examples | Low context overhead; responsive |
+| 🟡 Medium | 4,000-8,000 | Comprehensive skill | Balanced context usage; standard |
+| 🟠 Large | 8,000-15,000 | Extensive skill with many examples | Significant context usage |
+| 🔴 Heavy | 15,000-25,000 | Very comprehensive skill | High context consumption |
+| 🔴 Overweight | > 25,000 | Too large; consider splitting | Problematic for context limits |
+
+### Weight Assessment Examples
+
+**Example 1: Lightweight Skill (1,200 tokens)**
+- Simple workflow: 3-4 steps
+- Minimal supporting files
+- Few examples (1-2)
+- Limited configuration options
+
+**Example 2: Medium Skill (6,500 tokens)**
+- Comprehensive workflow: 6-8 steps
+- 2-3 reference files
+- Multiple examples (4-6)
+- Detailed configuration guide
+- Best practices section
+
+**Example 3: Heavy Skill (18,000 tokens)**
+- Complex multi-phase workflow: 10+ steps
+- 4-5 reference files with extensive content
+- Many examples (8+) with detailed output
+- Comprehensive configuration guide
+- Multiple use cases and edge cases
+- Troubleshooting section
+- *Recommendation: Consider splitting into focused sub-skills*
+
+## Output Format Example
+
+### Skill Validation Report
+
+```
+═══════════════════════════════════════════════════════════
+SKILL VALIDATION REPORT
+═══════════════════════════════════════════════════════════
+
+Skill: custom-agent-creator
+Validation Date: 2024-02-21
+
+───────────────────────────────────────────────────────────
+GENERAL INFORMATION
+───────────────────────────────────────────────────────────
+
+Status: ✅ VALID
+Skill Weight: 🟡 Medium (6,800 tokens)
+Files Analyzed: 4
+  - SKILL.md (3,200 tokens)
+  - references/copilot-agents.md (1,500 tokens)
+  - references/opencode-agents.md (1,400 tokens)
+  - assets/ (2 templates, 700 tokens)
+
+───────────────────────────────────────────────────────────
+VALIDATION RESULTS
+───────────────────────────────────────────────────────────
+
+✅ Frontmatter: Valid
+✅ Cross-References: All valid (3 internal, 2 file refs)
+✅ Readability: Clear and concise
+✅ Workflow: Well-defined (6 steps)
+✅ Validation Steps: Comprehensive (5 categories)
+✅ No Hallucinations: All tools/libraries verified
+✅ Isolation: Self-contained (no skill dependencies)
+✅ User Examples: 4 concrete examples with output
+⚠️ Duplicate Content: 1 minor (see below)
+
+───────────────────────────────────────────────────────────
+DUPLICATE CONTENT DETECTED
+───────────────────────────────────────────────────────────
+
+⚠️ WARNING: Overlapping tool descriptions found
+
+Location 1: SKILL.md, line 47 (OpenCode tools section)
+Location 2: references/opencode-agents.md, line 282 (tools config section)
+
+Issue: "Tool permissions are boolean or ask/allow/deny" 
+       described in both locations with 85% similarity
+
+Recommendation: Keep in SKILL.md (main reference), add cross-link 
+              in references file for clarity
+
+───────────────────────────────────────────────────────────
+WEIGHT ANALYSIS
+───────────────────────────────────────────────────────────
+
+Total Content: 6,800 tokens
+Content Distribution:
+  - Instructions: 35% (2,380 tokens)
+  - Examples: 40% (2,720 tokens)
+  - References: 20% (1,360 tokens)
+  - Formatting: 5% (340 tokens)
+
+Classification: 🟡 MEDIUM
+Impact: Balanced context usage; suitable for most use cases
+Recommendation: Current size is optimal. No splitting needed.
+
+If future expansion needed, consider:
+- Moving Copilot agent examples to separate skill
+- Creating OpenCode-specific variant
+- Extracting template examples to assets folder
+
+───────────────────────────────────────────────────────────
+ISSUES SUMMARY
+───────────────────────────────────────────────────────────
+
+🚨 Critical Issues: 0
+⚠️ Warnings: 1 (duplicate content - minor)
+ℹ️ Info: 0
+
+───────────────────────────────────────────────────────────
+CONCLUSION
+───────────────────────────────────────────────────────────
+
+Status: ✅ APPROVED FOR PRODUCTION
+
+The skill is well-structured, comprehensive, and ready for use.
+Recommend addressing the minor duplicate content warning in the
+next maintenance cycle for optimization.
+
+═══════════════════════════════════════════════════════════
+```
 
 ## Tools to use
 - File reading and parsing tools to examine `SKILL.md` and associated files.
-- Markdown parsing for cross-reference checking.
-- Text analysis for readability assessment.
+- Markdown parsing for cross-reference checking and header extraction.
+- Text analysis for readability assessment and duplicate detection.
+- Token counting for weight estimation (approximate: 1.3 tokens/word).
