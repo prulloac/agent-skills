@@ -4,11 +4,9 @@
     "features": {
         "ghcr.io/devcontainers/features/github-cli:1": {},
         "ghcr.io/stu-bell/devcontainer-features/open-code:0": {},
+        "ghcr.io/stu-bell/devcontainer-features/gemini-cli:0": {},
         "ghcr.io/devcontainers-extra/features/npm-package:1": {
             "package": "skills"
-        },
-        "ghcr.io/devcontainers-extra/features/npm-package:1": {
-            "package": "@google/gemini-cli"
         },
         "ghcr.io/devcontainers/features/node:1": {
             "version": "latest"
