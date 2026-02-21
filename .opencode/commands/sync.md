@@ -1,20 +1,167 @@
 ---
-description: Sync local and remote git repositories with conflict resolution
+description: Sync local and remote git repositories with conflict resolution and full change preservation
 agent: build
 ---
 
-Always begin with a git fetch, then check if the remote branch is ahead by any amount of commits. If it is, then you should stash current changes, do a pull --rebase from the remote branch, resolve any conflict, then apply the stashed changes, again resolve any conflicts. After that, now that you have no pending changes from the remote repository, you can use the git-commit-workflow skill to commit the current workspace changes. Once there are no changes pending to be committed, you can do a git push to sync both local and remote repositories.
+Safely synchronize local and remote git repositories while preserving all user changes (including untracked files and intentional deletions). This workflow includes explicit user approval before any changes are reverted or modified.
+
+## Important Safety Guidelines
+
+⚠️ **NEVER revert changes without explicit user approval**
+- If a user has deleted a file, DO NOT restore it without asking
+- If a user has modified a file, DO NOT discard changes without confirmation
+- Always show what will happen before executing risky operations
+- Untracked files are user changes and must be preserved
+
+## Execution Workflow
 
 Execute this workflow step by step:
 
-1. `git fetch`
-2. Check if remote branch is ahead: `git rev-list --count HEAD..origin/$(git branch --show-current)`
-3. If ahead > 0:
-   - `git stash`
-   - `git pull --rebase origin $(git branch --show-current)`
-   - Resolve any merge conflicts manually
-   - `git rebase --continue`
-4. `git stash pop`
-5. Resolve any conflicts from stash application
-6. Use git-commit-workflow skill to commit changes
-7. `git push origin $(git branch --show-current)`
+### Step 1: Fetch Remote Changes
+```
+git fetch
+```
+
+### Step 2: Check Remote Status
+```
+git rev-list --count HEAD..origin/$(git branch --show-current)
+```
+**If the count is 0:** Remote is up-to-date, proceed to Step 4
+**If the count > 0:** Remote has new commits, proceed to Step 3
+
+### Step 3: Handle Remote Updates (Only if remote is ahead)
+
+**3a. Create a backup branch (safety measure):**
+```
+git branch backup-$(git branch --show-current)-$(date +%s)
+```
+
+**3b. Stash tracked changes only (preserve untracked files):**
+```
+git stash push -m "backup: local changes before rebase"
+```
+
+**3c. Pull with rebase:**
+```
+git pull --rebase origin $(git branch --show-current)
+```
+
+**3d. If rebase conflicts occur:**
+- Display the conflicts to the user
+- Ask user for conflict resolution approach
+- User must manually resolve conflicts (or abort rebase if desired)
+- Run: `git rebase --continue` or `git rebase --abort` (user choice)
+
+**3e. Restore stashed changes:**
+```
+git stash pop
+```
+
+**3f. If stash conflicts occur:**
+- Display conflicts clearly
+- User must manually resolve or can run: `git checkout --theirs .` or `git checkout --ours .`
+- Ask user before auto-resolving
+
+### Step 4: Preserve Untracked Files
+```
+git status --porcelain
+```
+- **Report any untracked files to user** - these are preserved and will NOT be deleted
+- **Report any deleted files** - ask user if deletion was intentional
+  - If unintentional: offer to restore with `git restore <file>`
+  - If intentional: do NOT restore (user decision)
+
+### Step 5: Commit Workflow
+- Display current changes: `git status`
+- Use git-commit-workflow skill to commit ONLY approved changes
+- User must explicitly approve each commit group
+- Do NOT auto-commit without user interaction
+
+### Step 6: Push to Remote
+```
+git push origin $(git branch --show-current)
+```
+
+## Key Differences from Simple Workflows
+
+| Aspect | This Workflow | Unsafe Workflows |
+|--------|---------------|------------------|
+| **Untracked Files** | ✅ Preserved, reported to user | ❌ Silently ignored or lost |
+| **Deleted Files** | ✅ User confirms if accidental | ❌ Silently restored without approval |
+| **Conflicts** | ✅ User resolves, decision-based | ❌ Auto-resolved, might lose data |
+| **Change Approval** | ✅ Explicit user confirmation | ❌ Silent auto-commits |
+| **Backup Branch** | ✅ Created before risky operations | ❌ No safety net |
+| **Conflict Display** | ✅ Clear reporting to user | ❌ Automatic resolution |
+
+## User Decision Points (MANDATORY)
+
+The following steps REQUIRE explicit user input:
+
+1. ✅ **Before rebasing:** Show what files will be affected
+2. ✅ **During conflicts:** Ask how to resolve (manual or abort)
+3. ✅ **For deleted files:** Confirm if deletion was intentional
+4. ✅ **Before committing:** Show changes and ask for approval
+5. ✅ **Before pushing:** Confirm ready to publish
+
+## Example Execution Flow
+
+```
+$ sync
+
+[Step 1] Fetching from remote...
+✅ Done
+
+[Step 2] Checking remote status...
+ℹ️  Remote is 3 commits ahead
+
+[Step 3a] Creating backup branch...
+✅ backup-main-1708445432 created
+
+[Step 3b] Stashing tracked changes...
+✅ Saved 2 file changes
+
+[Step 3c] Pulling with rebase...
+⚠️  Rebase conflict in src/config.ts
+   - Ask user: (a) resolve manually, (b) abort rebase
+
+[User chooses (a) - resolve manually]
+
+[Step 3d] Resolving conflict...
+✅ User resolved conflict
+
+[Step 3e] Restoring stashed changes...
+ℹ️  Restored 2 files
+
+[Step 3f] Checking for stash conflicts...
+✅ No conflicts
+
+[Step 4] Checking untracked files...
+⚠️  Found 2 untracked files:
+   - new-feature.ts
+   - config.env
+ℹ️  These will be preserved
+
+[Step 5] Checking for deleted files...
+✅ No deleted files detected
+
+[Step 6] Committing changes...
+(User reviews and approves commits via git-commit-workflow)
+✅ Committed 2 changes
+
+[Step 7] Pushing to remote...
+✅ Pushed 2 commits
+```
+
+## Safety Checklist Before Running
+
+- [ ] All important work is saved in files (nothing in memory only)
+- [ ] You have reviewed untracked files listed
+- [ ] You understand which files are about to be pushed
+- [ ] You have a backup if needed (backup branch will be created automatically)
+
+## Abort Points
+
+At any time during this workflow, if something seems wrong:
+- **During rebase conflicts:** Run `git rebase --abort` to cancel the rebase
+- **During stash conflicts:** Use `git diff` to review conflicts, then `git checkout` to resolve
+- **Before push:** Run `git reset --soft HEAD~N` to undo recent commits (where N is the number of commits)
