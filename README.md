@@ -60,6 +60,7 @@ Each skill is a self-contained, well-documented module that agents can load to p
 - **readme-updater**: Synchronize README with current project metadata
 - **markdown-crossref-validator**: Validate cross-references in markdown documents
 - **system-prompt-validator**: Validate agent system prompts for quality and completeness
+- **skill-validator**: Validate skills for correctness, readability, and isolation
 
 ### Development Environment
 - **devcontainer-config**: Create and manage DevContainer configurations
@@ -82,8 +83,7 @@ Each skill contains a `SKILL.md` file which serves as the primary instruction se
 | **Planning** | feature-breakdown, feature-planning, ai-agent-implementation | Break down features and plan execution sequences |
 | **GitHub & Git** | github-pull-request, github-create-issue, git-commit-workflow, git-worktrees-usage | Manage version control and GitHub workflows |
 | **Development** | custom-agent-creator, skill-creator, mcp-builder, reusable-commands, vscode-extension-builder | Create and extend agent capabilities |
-| **Documentation** | readme-updater, markdown-crossref-validator, feature-summary | Maintain and validate documentation |
-| **Validation** | system-prompt-validator | Validate quality and consistency |
+| **Documentation & Validation** | readme-updater, markdown-crossref-validator, feature-summary, skill-validator, system-prompt-validator | Maintain and validate documentation and quality |
 | **Infrastructure** | devcontainer-config, tmux-usage-guide | Manage development environments and tools |
 
 ## Contributing
