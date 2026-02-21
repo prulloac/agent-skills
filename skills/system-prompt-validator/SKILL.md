@@ -1,9 +1,9 @@
 ---
-name: agent-prompt-validator
+name: system-prompt-validator
 description: Validate agent system prompts (such as agents.md) for being objective-driven, clear, readable, free of duplicated intentions, without missing or broken links, and ensuring required sections like general agentic guidelines, code review, and code generation are present. Use when validating or reviewing agent prompt files.
 ---
 
-# Agent Prompt Validator
+# System Prompt Validator
 
 ## Overview
 
