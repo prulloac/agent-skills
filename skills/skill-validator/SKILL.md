@@ -59,17 +59,35 @@ Use this skill when you need to validate an agent skill folder, checking its str
       - **Overweight** (> 25,000 tokens): Potentially too large; consider splitting
     - Include weight in validation report for context awareness
 
-11. **Summarize and validate execution**:
-    - After completing all checks, provide a concise summary of the validation results, confirming the skill's status (valid or invalid), listing any issues, and suggesting fixes.
-    - Categorize issues by severity (Critical 🚨, Warning ⚠️, Info ℹ️) and group them accordingly.
-    - Include the skill's weight classification and token estimate.
-    - If issues are found, include examples and suggestions for fixes. If no issues, confirm validity with a positive note.
-    - This step ensures the validation process itself was correctly executed and provides closure.
+11. **Security audit** ⭐ NEW:
+     - Run the security validation module to check for common security vulnerabilities
+     - Check for untrusted data sources (git, subprocess, files, APIs, user input)
+     - Verify all untrusted data is properly sanitized before use
+     - Identify high-privilege operations and verify they have user confirmation
+     - Detect injection vulnerabilities (prompt, shell, SQL, code)
+     - Verify error handling is comprehensive and doesn't leak sensitive data
+     - Confirm secrets/credentials are not hardcoded and .env is documented
+     - The security module will flag potential issues for remediation
+     - **Tools**: Use `scripts/security_audit.py` to automatically scan the skill
 
-12. **Check for user information presentation examples**:
-    - If the skill involves displaying or outputting information to the user (e.g., validation results, reports, or checklists), IT IS MANDATORY for it to include concrete examples of output formats.
-    - Specify sample outputs, such as validation summaries with categorized issues (Critical 🚨, Warning ⚠️, Info ℹ️), checklists, or formatted messages.
-    - This sets clear expectations and improves user experience by demonstrating the exact presentation style.
+12. **Summarize and validate execution**:
+     - After completing all checks, provide a concise summary of the validation results, confirming the skill's status (valid or invalid), listing any issues, and suggesting fixes.
+     - Categorize issues by severity (Critical 🚨, Warning ⚠️, Info ℹ️) and group them accordingly.
+     - Include the skill's weight classification and token estimate.
+     - If issues are found, include examples and suggestions for fixes. If no issues, confirm validity with a positive note.
+     - This step ensures the validation process itself was correctly executed and provides closure.
+
+ 12. **Check for user information presentation examples**:
+     - If the skill involves displaying or outputting information to the user (e.g., validation results, reports, or checklists), IT IS MANDATORY for it to include concrete examples of output formats.
+     - Specify sample outputs, such as validation summaries with categorized issues (Critical 🚨, Warning ⚠️, Info ℹ️), checklists, or formatted messages.
+     - This sets clear expectations and improves user experience by demonstrating the exact presentation style.
+ 
+13. **Validate security audit report** (automated via scripts/security_audit.py):
+     - The security audit script generates a detailed report with security findings
+     - Review any flagged issues and ensure they are addressed
+     - Critical issues (🚨) must be resolved before the skill is approved
+     - Warnings (⚠️) should be reviewed and justified if not addressed
+     - Info items (ℹ️) are recommendations for future improvements
 
 ## Examples
 
@@ -257,8 +275,81 @@ next maintenance cycle for optimization.
 ═══════════════════════════════════════════════════════════
 ```
 
+## Security Audit Module
+
+The skill-validator now includes a built-in security audit module (`scripts/security_audit.py`) that checks for common security vulnerabilities. This module implements six comprehensive validation rules:
+
+### Security Rules
+
+**Rule 1: Untrusted Data Detection**
+- Identifies external data sources (git, subprocess, files, APIs, user input)
+- Flags sources that need sanitization
+- Severity: HIGH (CRITICAL for git data and subprocess)
+
+**Rule 2: Sanitization Requirement Verification**
+- Verifies untrusted data is sanitized before use
+- Checks for sanitization functions in the skill code
+- Severity: CRITICAL if untrusted data found without sanitization
+
+**Rule 3: High-Privilege Operation Detection**
+- Identifies dangerous operations: file deletion, git push, shell execution
+- Requires human confirmation for these operations
+- Severity: CRITICAL for force operations
+
+**Rule 4: Injection Risk Analysis**
+- Detects potential injection vulnerabilities: prompt, shell, SQL, code
+- Flags suspicious keywords that indicate attack attempts
+- Severity: CRITICAL
+
+**Rule 5: Error Handling Completeness**
+- Verifies try/catch blocks for external operations
+- Checks for timeout protection
+- Ensures no sensitive data in error messages
+- Severity: HIGH
+
+**Rule 6: Secrets Protection**
+- Detects hardcoded credentials
+- Verifies .env and environment variables are documented
+- Flags missing secrets protection
+- Severity: CRITICAL for hardcoded secrets
+
+### Running Security Audit
+
+```bash
+# Basic usage
+python3 scripts/security_audit.py /path/to/SKILL.md
+
+# Example output
+════════════════════════════════════════════════════════════
+SECURITY AUDIT REPORT
+════════════════════════════════════════════════════════════
+
+Skill: /path/to/SKILL.md
+Status: ✅ PASSED
+
+────────────────────────────────────────────────────────────
+SUMMARY
+────────────────────────────────────────────────────────────
+🚨 Critical Issues: 0
+⚠️  High Priority: 0
+ℹ️  Medium Priority: 0
+Total Issues: 0
+
+✅ No security issues detected!
+════════════════════════════════════════════════════════════
+```
+
+### Integration with Validation Workflow
+
+The security audit is automatically run as **Step 11** of the validation process. Security issues are categorized by severity:
+
+- **🚨 Critical**: Must be fixed before production deployment
+- **⚠️ Warning**: Should be reviewed and justified
+- **ℹ️ Info**: Recommendations for future improvements
+
 ## Tools to use
 - File reading and parsing tools to examine `SKILL.md` and associated files.
 - Markdown parsing for cross-reference checking and header extraction.
 - Text analysis for readability assessment and duplicate detection.
 - Token counting for weight estimation (approximate: 1.3 tokens/word).
+- **Security audit**: `scripts/security_audit.py` for automated vulnerability scanning (NEW)

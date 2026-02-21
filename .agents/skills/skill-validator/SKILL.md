@@ -190,7 +190,7 @@ Use this skill when you need to validate an agent skill folder, checking its str
 SKILL VALIDATION REPORT
 ═══════════════════════════════════════════════════════════
 
-Skill: data-processor
+Skill: custom-agent-creator
 Validation Date: 2024-02-21
 
 ───────────────────────────────────────────────────────────
@@ -201,8 +201,8 @@ Status: ✅ VALID
 Skill Weight: 🟡 Medium (6,800 tokens)
 Files Analyzed: 4
   - SKILL.md (3,200 tokens)
-  - references/quickstart.md (1,500 tokens)
-  - references/advanced-patterns.md (1,400 tokens)
+  - references/copilot-agents.md (1,500 tokens)
+  - references/opencode-agents.md (1,400 tokens)
   - assets/ (2 templates, 700 tokens)
 
 ───────────────────────────────────────────────────────────
@@ -223,16 +223,16 @@ VALIDATION RESULTS
 DUPLICATE CONTENT DETECTED
 ───────────────────────────────────────────────────────────
 
-⚠️ WARNING: Overlapping configuration descriptions found
+⚠️ WARNING: Overlapping tool descriptions found
 
-Location 1: SKILL.md, line 47 (configuration options section)
-Location 2: references/advanced-patterns.md, line 142 (configuration reference)
+Location 1: SKILL.md, line 47 (OpenCode tools section)
+Location 2: references/opencode-agents.md, line 282 (tools config section)
 
-Issue: "Batch size can be an integer or 'auto'" 
+Issue: "Tool permissions are boolean or ask/allow/deny" 
        described in both locations with 85% similarity
 
 Recommendation: Keep in SKILL.md (main reference), add cross-link 
-               in references file for clarity
+              in references file for clarity
 
 ───────────────────────────────────────────────────────────
 WEIGHT ANALYSIS
@@ -250,9 +250,9 @@ Impact: Balanced context usage; suitable for most use cases
 Recommendation: Current size is optimal. No splitting needed.
 
 If future expansion needed, consider:
-- Extracting advanced patterns to separate skill
-- Creating domain-specific variants for different data types
-- Moving detailed examples to assets folder
+- Moving Copilot agent examples to separate skill
+- Creating OpenCode-specific variant
+- Extracting template examples to assets folder
 
 ───────────────────────────────────────────────────────────
 ISSUES SUMMARY
