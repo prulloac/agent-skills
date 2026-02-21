@@ -1,5 +1,5 @@
 ---
-name: tmux
+name: tmux-usage-guide
 description: Terminal multiplexer expertise for session, window, and pane management. Use when working with tmux for creating/managing sessions, splitting windows into panes, configuring tmux settings, troubleshooting tmux issues, or answering questions about tmux commands, key bindings, configuration options, and workflows.
 ---
 
@@ -219,3 +219,43 @@ This skill includes two comprehensive reference documents:
 - **[configuration.md](references/configuration.md)**: Configuration options, customization patterns, status bar formatting, and plugin management
 
 Load these references when detailed syntax or configuration examples are needed.
+
+## Validation & Verification Steps
+
+When providing tmux guidance or solutions, verify the following:
+
+### Command Verification
+- ✅ Command syntax is correct (check `man tmux` or references)
+- ✅ Key bindings match tmux version (defaults may vary)
+- ✅ Prefix key assumption is documented (default: `Ctrl-b`)
+- ✅ Command flags are appropriate for the use case
+- ✅ Target syntax is correct (`session:window.pane` format when needed)
+
+### Configuration Verification
+- ✅ Configuration file path is correct (`~/.tmux.conf`)
+- ✅ Configuration option names match current tmux version
+- ✅ Settings scope is documented (global `-g`, window `-w`, pane `-p`)
+- ✅ Reload command is provided (`tmux source-file ~/.tmux.conf`)
+- ✅ Any version-specific options are noted
+
+### Solution Verification
+- ✅ Solution solves the stated problem
+- ✅ Key bindings or commands are tested and functional
+- ✅ Multiple options provided (key binding + command form when applicable)
+- ✅ Workarounds mentioned if solution requires tmux restart
+- ✅ Edge cases or common gotchas are addressed
+
+### Output Verification
+When showing command output or behavior:
+- ✅ Session/window/pane structure is clear
+- ✅ Status indicators match actual tmux behavior
+- ✅ Output format matches user's tmux version
+- ✅ Examples are reproducible with provided steps
+
+### Troubleshooting Verification
+When helping with issues:
+- ✅ Root cause is identified or explored
+- ✅ Diagnostic steps are provided
+- ✅ Multiple potential causes are considered
+- ✅ Solution includes verification steps
+- ✅ Workarounds provided if permanent fix isn't possible
