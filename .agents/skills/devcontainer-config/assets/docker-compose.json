@@ -1,0 +1,20 @@
+{
+  "name": "Dev Container",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  
+  "features": {},
+  
+  "customizations": {
+    "vscode": {
+      "extensions": []
+    }
+  },
+  
+  "forwardPorts": [],
+  
+  "postCreateCommand": "",
+  
+  "remoteUser": "vscode"
+}
