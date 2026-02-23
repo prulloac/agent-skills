@@ -62,19 +62,25 @@ git stash pop
 - User must manually resolve or can run: `git checkout --theirs .` or `git checkout --ours .`
 - Ask user before auto-resolving
 
-### Step 4: Preserve Untracked Files
+### Step 4: Preserve and Prepare Untracked Files
 ```
 git status --porcelain
 ```
-- **Report any untracked files to user** - these are preserved and will NOT be deleted
+- **Report any untracked files to user** - ask which ones to include in commits
 - **Report any deleted files** - ask user if deletion was intentional
   - If unintentional: offer to restore with `git restore <file>`
   - If intentional: do NOT restore (user decision)
+- **For untracked files user wants to include:**
+  - Stage them: `git add <untracked-file>`
+  - They will be included in the next commit
+- **For untracked files user wants to keep but NOT commit:**
+  - Leave them unstaged (they will be preserved but not committed)
 
 ### Step 5: Commit Workflow
 - Display current changes: `git status`
-- Use git-commit-workflow skill to commit ONLY approved changes
+- Use git-commit-workflow skill to commit all staged changes (tracked + untracked)
 - User must explicitly approve each commit group
+- User can choose which untracked files to include per commit
 - Do NOT auto-commit without user interaction
 
 ### Step 6: Push to Remote
@@ -86,7 +92,7 @@ git push origin $(git branch --show-current)
 
 | Aspect | This Workflow | Unsafe Workflows |
 |--------|---------------|------------------|
-| **Untracked Files** | ✅ Preserved, reported to user | ❌ Silently ignored or lost |
+| **Untracked Files** | ✅ User decides: commit or preserve | ❌ Silently ignored or lost |
 | **Deleted Files** | ✅ User confirms if accidental | ❌ Silently restored without approval |
 | **Conflicts** | ✅ User resolves, decision-based | ❌ Auto-resolved, might lose data |
 | **Change Approval** | ✅ Explicit user confirmation | ❌ Silent auto-commits |
@@ -100,8 +106,9 @@ The following steps REQUIRE explicit user input:
 1. ✅ **Before rebasing:** Show what files will be affected
 2. ✅ **During conflicts:** Ask how to resolve (manual or abort)
 3. ✅ **For deleted files:** Confirm if deletion was intentional
-4. ✅ **Before committing:** Show changes and ask for approval
-5. ✅ **Before pushing:** Confirm ready to publish
+4. ✅ **For untracked files:** Ask which files to include in commits (and which to preserve)
+5. ✅ **Before committing:** Show changes and ask for approval
+6. ✅ **Before pushing:** Confirm ready to publish
 
 ## Example Execution Flow
 
@@ -139,17 +146,25 @@ $ sync
 ⚠️  Found 2 untracked files:
    - new-feature.ts
    - config.env
-ℹ️  These will be preserved
+
+User decision: "Include new-feature.ts in commit, but preserve config.env"
+$ git add new-feature.ts
+
+✅ new-feature.ts staged for commit
 
 [Step 5] Checking for deleted files...
 ✅ No deleted files detected
 
 [Step 6] Committing changes...
 (User reviews and approves commits via git-commit-workflow)
-✅ Committed 2 changes
+✅ Committed 2 changes (including new-feature.ts)
 
 [Step 7] Pushing to remote...
 ✅ Pushed 2 commits
+
+[Result] Untracked files:
+- new-feature.ts ✅ COMMITTED
+- config.env ✅ PRESERVED (not committed)
 ```
 
 ## Safety Checklist Before Running
