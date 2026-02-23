@@ -1,0 +1,70 @@
+# CI workflow template
+# Runs on push to main and pull requests
+# Customize: language setup, test commands, and build steps
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions: read-all
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      # TODO: Add language setup step (actions/setup-node, actions/setup-python, etc.)
+
+      # TODO: Add dependency install step
+
+      # TODO: Add lint command
+      - name: Lint
+        run: echo "Add your lint command here"
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      # TODO: Add language setup step
+
+      # TODO: Add dependency install step
+
+      # TODO: Add test command
+      - name: Run tests
+        run: echo "Add your test command here"
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [lint, test]
+    steps:
+      - uses: actions/checkout@v4
+
+      # TODO: Add language setup step
+
+      # TODO: Add dependency install step
+
+      # TODO: Add build command
+      - name: Build
+        run: echo "Add your build command here"
+
+      # TODO: Uncomment to upload build artifacts
+      # - uses: actions/upload-artifact@v4
+      #   with:
+      #     name: build
+      #     path: dist/
+      #     retention-days: 7

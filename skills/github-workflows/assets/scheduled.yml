@@ -1,0 +1,63 @@
+# Scheduled workflow template
+# Runs on a cron schedule for maintenance, cleanup, or reporting tasks
+# Customize: schedule, task steps, and notification targets
+name: Scheduled Tasks
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'  # Every Monday at 06:00 UTC
+
+  workflow_dispatch:  # Allow manual trigger for testing
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  # Example: Check for stale issues and PRs
+  stale:
+    name: Stale Issues
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      # TODO: Uncomment and configure stale action
+      # - uses: actions/stale@v9
+      #   with:
+      #     days-before-stale: 60
+      #     days-before-close: 14
+      #     stale-issue-label: stale
+      #     stale-pr-label: stale
+      #     stale-issue-message: >
+      #       This issue has been automatically marked as stale because it has not
+      #       had recent activity. It will be closed if no further activity occurs.
+      #     exempt-issue-labels: pinned,security
+
+      - name: Run maintenance task
+        run: echo "Add your scheduled task here"
+
+  # Example: Dependency update check
+  dependency-check:
+    name: Dependency Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      # TODO: Add language setup
+
+      - name: Check for outdated dependencies
+        run: echo "Add your dependency check command here"
+
+      # TODO: Uncomment to create an issue with results
+      # - name: Create issue if outdated
+      #   if: steps.check.outputs.outdated == 'true'
+      #   uses: actions/github-script@v7
+      #   with:
+      #     script: |
+      #       await github.rest.issues.create({
+      #         owner: context.repo.owner,
+      #         repo: context.repo.repo,
+      #         title: 'Dependency update required',
+      #         body: 'Outdated dependencies detected. Please review.',
+      #         labels: ['dependencies'],
+      #       });

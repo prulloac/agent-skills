@@ -1,0 +1,67 @@
+# Deployment workflow template
+# Triggered manually or after CI succeeds on main
+# Customize: deployment target, environment configuration, and deploy steps
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+        default: staging
+
+  # Uncomment to auto-deploy on push to main:
+  # push:
+  #   branches: [main]
+
+permissions:
+  contents: read
+  id-token: write  # For OIDC-based cloud authentication
+
+jobs:
+  deploy:
+    name: Deploy to ${{ inputs.environment || 'staging' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: ${{ inputs.environment || 'staging' }}
+      url: ${{ steps.deploy.outputs.url }}
+
+    concurrency:
+      group: deploy-${{ inputs.environment || 'staging' }}
+      cancel-in-progress: false
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # TODO: Add cloud provider authentication
+      # Example for AWS:
+      # - uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+      #     aws-region: ${{ vars.AWS_REGION }}
+
+      # TODO: Add build step or download artifact from CI
+      # - uses: actions/download-artifact@v4
+      #   with:
+      #     name: build
+      #     path: dist/
+
+      - name: Deploy
+        id: deploy
+        run: |
+          echo "Add your deployment command here"
+          echo "url=https://example.com" >> "$GITHUB_OUTPUT"
+
+      - name: Verify deployment
+        run: |
+          echo "Add your smoke test or health check here"
+
+      - name: Notify on failure
+        if: failure()
+        run: echo "Deployment failed - add notification step here"

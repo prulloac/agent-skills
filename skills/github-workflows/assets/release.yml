@@ -1,0 +1,50 @@
+# Release workflow template
+# Triggered when a tag matching v* is pushed or manually
+# Customize: build steps, release assets, and changelog generation
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag (e.g., v1.2.3)'
+        required: true
+
+permissions:
+  contents: write  # For creating releases
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for changelog
+
+      # TODO: Add language setup and build steps
+
+      - name: Build
+        run: echo "Add your build command here"
+
+      # TODO: Uncomment and customize release creation
+      # - uses: softprops/action-gh-release@v2
+      #   with:
+      #     tag_name: ${{ inputs.tag || github.ref_name }}
+      #     generate_release_notes: true
+      #     draft: false
+      #     prerelease: ${{ contains(inputs.tag || github.ref_name, '-rc') }}
+      #     files: |
+      #       dist/*.tar.gz
+      #       dist/*.zip
+
+      # TODO: Uncomment to publish to a package registry
+      # - name: Publish to registry
+      #   run: echo "Add your publish command here"
+      #   env:
+      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
