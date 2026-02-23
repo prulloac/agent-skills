@@ -1,13 +1,75 @@
 #!/usr/bin/env python3
 """
 Quick validation script for skills - minimal version
+
+No external dependencies. Uses a simple frontmatter parser instead of PyYAML
+since skill frontmatter only contains simple key: value pairs.
 """
 
 import sys
-import os
 import re
-import yaml
 from pathlib import Path
+
+
+def parse_frontmatter(text):
+    """
+    Parse simple YAML frontmatter (key: value pairs) without external dependencies.
+
+    Handles:
+    - Simple scalars: name: my-skill
+    - Quoted strings: description: "my description"
+    - Multi-line folded strings using trailing whitespace continuation
+    - Blank/comment-only lines
+
+    Does NOT handle nested objects, lists, anchors, or other advanced YAML.
+    This is intentional -- skill frontmatter should only use simple key-value pairs.
+
+    Returns:
+        dict of parsed key-value pairs
+
+    Raises:
+        ValueError on parse errors
+    """
+    result = {}
+    current_key = None
+    current_value_lines = []
+
+    def _flush():
+        nonlocal current_key, current_value_lines
+        if current_key is not None:
+            raw = ' '.join(current_value_lines)
+            # Strip matching quotes
+            if len(raw) >= 2 and raw[0] in ('"', "'") and raw[-1] == raw[0]:
+                raw = raw[1:-1]
+            result[current_key] = raw
+            current_key = None
+            current_value_lines = []
+
+    for line in text.splitlines():
+        stripped = line.strip()
+        # Skip blank lines and comments
+        if not stripped or stripped.startswith('#'):
+            continue
+
+        # Continuation line (starts with whitespace and we have a current key)
+        if line[0] in (' ', '\t') and current_key is not None:
+            current_value_lines.append(stripped)
+            continue
+
+        # New key: value pair
+        colon_pos = line.find(':')
+        if colon_pos == -1:
+            raise ValueError(f"Expected 'key: value' but got: {line}")
+
+        _flush()
+        current_key = line[:colon_pos].strip()
+        value_part = line[colon_pos + 1:].strip()
+        if value_part:
+            current_value_lines.append(value_part)
+
+    _flush()
+    return result
+
 
 def validate_skill(skill_path):
     """Basic validation of a skill"""
@@ -30,13 +92,13 @@ def validate_skill(skill_path):
 
     frontmatter_text = match.group(1)
 
-    # Parse YAML frontmatter
+    # Parse frontmatter
     try:
-        frontmatter = yaml.safe_load(frontmatter_text)
+        frontmatter = parse_frontmatter(frontmatter_text)
         if not isinstance(frontmatter, dict):
             return False, "Frontmatter must be a YAML dictionary"
-    except yaml.YAMLError as e:
-        return False, f"Invalid YAML in frontmatter: {e}"
+    except ValueError as e:
+        return False, f"Invalid frontmatter: {e}"
 
     # Define allowed properties
     ALLOWED_PROPERTIES = {'name', 'description', 'license', 'allowed-tools', 'metadata', 'compatibility'}
@@ -93,11 +155,12 @@ def validate_skill(skill_path):
 
     return True, "Skill is valid!"
 
+
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python quick_validate.py <skill_directory>")
         sys.exit(1)
-    
+
     valid, message = validate_skill(sys.argv[1])
     print(message)
     sys.exit(0 if valid else 1)
