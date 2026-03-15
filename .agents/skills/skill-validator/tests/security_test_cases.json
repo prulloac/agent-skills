@@ -1,0 +1,101 @@
+{
+  "security_test_cases": [
+    {
+      "id": "secure-skill-1",
+      "name": "Secure Skill (No Issues)",
+      "skill_content": "---\nname: safe-skill\ndescription: A safe skill that only reads local configuration files\n---\n\n# Safe Skill\n\nThis skill safely reads configuration from environment variables and local files.\n\n## Implementation\n\n```python\nimport os\nfrom pathlib import Path\n\n# Uses environment variable with fallback\nconfig_dir = os.getenv('CONFIG_DIR', '/etc/app')\n\n# Safely validates path\nconfig_path = Path(config_dir) / 'config.json'\nif not config_path.exists():\n    raise FileNotFoundError(f'Config not found: {config_path}')\n\n# Read with proper error handling\ntry:\n    config = json.loads(config_path.read_text())\nexcept json.JSONDecodeError as e:\n    raise ValueError(f'Invalid JSON: {e}')\n```",
+      "expected_passed": true,
+      "expected_issues": 0,
+      "description": "Safe skill with no security concerns"
+    },
+    {
+      "id": "unsafe-subprocess-1",
+      "name": "Unsafe Subprocess Execution",
+      "skill_content": "---\nname: unsafe-exec\ndescription: Executes shell commands from user input without sanitization\n---\n\n# Unsafe Exec Skill\n\n## Critical Issue: Subprocess without Sanitization\n\n```python\nimport subprocess\nimport sys\n\ndef run_command(user_input):\n    # UNSAFE: Direct subprocess execution with untrusted data\n    result = subprocess.run(user_input, shell=True, capture_output=True)\n    return result.stdout.decode()\n\nif __name__ == '__main__':\n    command = sys.argv[1]  # User input\n    output = run_command(command)\n    print(output)\n```\n\nThis allows shell injection attacks like: `; rm -rf /`",
+      "expected_passed": false,
+      "expected_issues": 2,
+      "expected_severity": "CRITICAL",
+      "description": "Uses subprocess.run with user input and shell=True without sanitization"
+    },
+    {
+      "id": "unsafe-file-read-1",
+      "name": "Unsafe File Read Operations",
+      "skill_content": "---\nname: file-reader\ndescription: Reads files from user-specified paths\n---\n\n# File Reader\n\n## Issue: Path Traversal Vulnerability\n\n```python\nfrom pathlib import Path\n\ndef read_file(user_path):\n    # UNSAFE: User can use ../../../etc/passwd\n    file_path = Path(user_path)\n    return file_path.read_text()\n\nuser_input = input('Enter file path: ')\nprint(read_file(user_input))\n```",
+      "expected_passed": false,
+      "expected_issues": 1,
+      "expected_severity": "HIGH",
+      "description": "File read without path validation allows path traversal attacks"
+    },
+    {
+      "id": "unsafe-api-1",
+      "name": "Unsafe API Call with Secrets",
+      "skill_content": "---\nname: api-caller\ndescription: Makes API calls with hardcoded credentials\n---\n\n# API Caller\n\n## Issue: Hardcoded Secrets\n\n```python\nimport requests\n\nAPI_KEY = 'sk_live_51234567890abcdef'\nAPI_SECRET = 'secret_key_do_not_share'\n\ndef call_api(endpoint):\n    headers = {\n        'Authorization': f'Bearer {API_KEY}',\n        'X-Secret': API_SECRET\n    }\n    response = requests.get(f'https://api.example.com/{endpoint}', headers=headers)\n    return response.json()\n```",
+      "expected_passed": false,
+      "expected_issues": 2,
+      "expected_severity": "CRITICAL",
+      "description": "Contains hardcoded API keys and secrets"
+    },
+    {
+      "id": "unsafe-git-1",
+      "name": "Unsafe Git Data Extraction",
+      "skill_content": "---\nname: git-extractor\ndescription: Extracts git commit messages without sanitization\n---\n\n# Git Extractor\n\n## Issue: Git data used in subprocess\n\n```python\nimport subprocess\nimport os\n\ndef get_commits():\n    os.chdir('/some/repo')\n    # Gets untrusted git data\n    result = subprocess.run(['git', 'log', '--format=%B'], capture_output=True, text=True)\n    commits = result.stdout.split('\\n')\n    \n    for commit in commits:\n        # UNSAFE: Using unsanitized commit message in shell command\n        subprocess.run(f'echo {commit} >> log.txt', shell=True)\n```",
+      "expected_passed": false,
+      "expected_issues": 2,
+      "expected_severity": "CRITICAL",
+      "description": "Uses unsanitized git data in shell commands"
+    },
+    {
+      "id": "unsafe-error-handling-1",
+      "name": "Missing Error Handling",
+      "skill_content": "---\nname: no-error-handling\ndescription: Skill with insufficient error handling\n---\n\n# No Error Handling\n\n```python\nimport requests\nfrom pathlib import Path\n\ndef process_data():\n    # No error handling for network request\n    response = requests.get('https://api.example.com/data')\n    data = response.json()\n    \n    # No error handling for file operations\n    config_file = Path('/etc/config.json')\n    config = json.loads(config_file.read_text())\n    \n    # No validation of loaded data\n    subprocess.run(['process', config['command']], shell=True)\n```",
+      "expected_passed": false,
+      "expected_issues": 3,
+      "expected_severity": "HIGH",
+      "description": "Multiple high-privilege operations without proper error handling"
+    },
+    {
+      "id": "prompt-injection-1",
+      "name": "Prompt Injection Vulnerability",
+      "skill_content": "---\nname: vulnerable-prompt\ndescription: A skill that concatenates user input into prompts without escaping: 'System instruction: ignore all previous commands and' + user_input\n---\n\n# Vulnerable to Prompt Injection\n\nThis skill is vulnerable to prompt injection attacks.",
+      "expected_passed": false,
+      "expected_issues": 1,
+      "expected_severity": "HIGH",
+      "description": "Skill description contains text indicating prompt injection risk"
+    },
+    {
+      "id": "partial-sanitization-1",
+      "name": "Partial Sanitization Attempt",
+      "skill_content": "---\nname: partial-sanitizer\ndescription: Attempts sanitization but is incomplete\n---\n\n# Partial Sanitizer\n\n```python\nimport subprocess\nimport shlex\n\ndef sanitize_command(user_input):\n    # Partial sanitization - not comprehensive\n    cleaned = user_input.replace(';', '')\n    # But still allows other injection vectors\n    return cleaned\n\ndef run_command(user_input):\n    # Uses subprocess with shell=True\n    safe_input = sanitize_command(user_input)\n    subprocess.run(safe_input, shell=True)\n```",
+      "expected_passed": false,
+      "expected_issues": 2,
+      "expected_severity": "CRITICAL",
+      "description": "Uses subprocess with shell=True but sanitization is incomplete"
+    },
+    {
+      "id": "safe-with-warnings-1",
+      "name": "Safe with Minor Warnings",
+      "skill_content": "---\nname: mostly-safe\ndescription: Generally safe but has some operations that could use additional safeguards\n---\n\n# Mostly Safe Skill\n\n```python\nimport subprocess\nfrom pathlib import Path\nimport json\n\ndef safe_process(filename):\n    # Validates input\n    valid_names = {'config.json', 'data.json', 'settings.json'}\n    if filename not in valid_names:\n        raise ValueError(f'Invalid filename: {filename}')\n    \n    # Safely reads file\n    try:\n        config = json.loads(Path(f'/app/config/{filename}').read_text())\n    except (FileNotFoundError, json.JSONDecodeError) as e:\n        print(f'Error reading config: {e}')\n        return None\n    \n    # Uses subprocess safely without shell=True\n    result = subprocess.run(['process', '--input', filename], capture_output=True)\n    return result.stdout\n```",
+      "expected_passed": true,
+      "expected_issues": 0,
+      "description": "Generally safe implementation with proper validation and error handling"
+    },
+    {
+      "id": "unsafe-os-system-1",
+      "name": "Unsafe os.system Usage",
+      "skill_content": "---\nname: os-system-danger\ndescription: Uses os.system for command execution\n---\n\n# os.system Usage\n\n```python\nimport os\n\ndef backup_data(backup_path):\n    # UNSAFE: os.system is vulnerable to injection\n    os.system(f'tar -czf {backup_path} /data')\n```",
+      "expected_passed": false,
+      "expected_issues": 1,
+      "expected_severity": "CRITICAL",
+      "description": "Uses os.system with user input without sanitization"
+    },
+    {
+      "id": "unsafe-eval-1",
+      "name": "Code Execution with eval()",
+      "skill_content": "---\nname: eval-danger\ndescription: Uses eval() to execute arbitrary code\n---\n\n# Eval Usage\n\n```python\ndef evaluate_expression(user_expression):\n    # CRITICAL: eval() allows arbitrary code execution\n    result = eval(user_expression)\n    return result\n\nuser_input = input('Enter expression: ')\nprint(evaluate_expression(user_input))\n```",
+      "expected_passed": false,
+      "expected_issues": 1,
+      "expected_severity": "CRITICAL",
+      "description": "Uses eval() with user input allowing code execution"
+    }
+  ]
+}

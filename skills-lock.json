@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "skill-validator": {
+      "source": "prulloac/vibe-coding-template",
+      "sourceType": "github",
+      "computedHash": "90a0c00bc1b8fa7eb5e7f2a8662b78f30ec1c74bdb63a32422fe223fe19b11be"
+    }
+  }
+}

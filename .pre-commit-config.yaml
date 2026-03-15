@@ -1,0 +1,40 @@
+repos:
+  # General file checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+        args: ['--maxkb=500']
+      - id: check-json
+      - id: detect-private-key
+
+  # Python formatting
+  - repo: https://github.com/psf/black
+    rev: 23.12.1
+    hooks:
+      - id: black
+        language_version: python3
+        # Only run on files we explicitly want to format
+        files: ^(\.opencode|mcp\.json|opencode\.json)
+
+  # Python import sorting
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        args: ['--profile', 'black']
+        # Only run on files we explicitly want to format
+        files: ^(\.opencode|mcp\.json|opencode\.json)
+
+  # Commit message validation (non-AI)
+  - repo: https://github.com/prulloac/pre-commit-hooks
+    rev: v1.0.0
+    hooks:
+      - id: validate-commit-msg-conventional
+      - id: validate-commit-msg-max
+
+default_language_version:
+  python: python3
